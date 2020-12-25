@@ -2,16 +2,16 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/[Ll]ogs/
-/[Mm]emoryCaptures/
+/The Fallen Mage/[Ll]ibrary/
+/The Fallen Mage/[Tt]emp/
+/The Fallen Mage/[Oo]bj/
+/The Fallen Mage/[Bb]uild/
+/The Fallen Mage/[Bb]uilds/
+/The Fallen Mage/[Ll]ogs/
+/The Fallen Mage/[Mm]emoryCaptures/
 
 # Never ignore Asset meta data
-!/[Aa]ssets/**/*.meta
+!/The Fallen Mage/[Aa]ssets/**/*.meta
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
