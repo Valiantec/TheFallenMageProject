@@ -648,7 +648,11 @@ PlayerSettings:
       daydreamIconForeground: {fileID: 0}
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled:
+<<<<<<< Updated upstream
     Collab: 1
+=======
+    Collab: 0
+>>>>>>> Stashed changes
     UNet: 1
   luminIcon:
     m_Name: 
