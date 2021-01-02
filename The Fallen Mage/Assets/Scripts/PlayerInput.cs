@@ -4,51 +4,35 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
-    public float speed = 5f;
-    public float runningSpeed = 10f;
-    public Animation anim;
-    public Rigidbody rb;
-    public Transform cameraLookPoint;
+    [SerializeField] float speed = 5f;
+    [SerializeField] float sprintingSpeed = 10f;
+
+    Animator animator;
+
+    void Awake()
+    {
+        animator = GetComponentInChildren<Animator>();
+    }
 
     void Update()
     {
-        float forward = Input.GetAxisRaw("Vertical");
-        float sideways = Input.GetAxisRaw("Horizontal");
-        Vector3 movement = new Vector3(sideways, 0f, forward);
-
-        bool running = Input.GetKey(KeyCode.LeftShift);
-        if (forward != 0 || sideways != 0)
-        {
-            if (running)
-            {
-                anim.Play("Run");
-            }
-            else
-            {
-                anim.Play("Walk");
-            }
-        }
-        else
-        {
-            anim.Play("idle");
-        }
+        //take input
+        bool sprinting = Input.GetKey(KeyCode.LeftShift);
+        float vertical = Input.GetAxisRaw("Vertical");
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        Vector3 movement = new Vector3(horizontal, 0f, vertical).normalized;
+        Vector2 mouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         
-        movement *= (running ? runningSpeed : speed) * Time.deltaTime;
-        ControlCamera();
+        //move transform
+        movement *= (sprinting ? sprintingSpeed : speed) * Time.deltaTime;
         transform.Translate(movement);
+
+        //rotate transform
+        transform.Rotate(transform.up, mouseInput.x);
+
+        //animate
+        animator.SetFloat("Horizontal", horizontal, 0.1f, Time.deltaTime);
+        animator.SetFloat("Vertical", vertical, 0.1f, Time.deltaTime);
     }
 
-    void ControlCamera()
-    {
-        Vector2 mouseInp = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
-        Vector3 rotation = Vector3.right * -mouseInp.y;
-
-        transform.Rotate(transform.up, mouseInp.x);
-        
-        if (cameraLookPoint.rotation.eulerAngles.x + rotation.x < 50 ||
-            cameraLookPoint.rotation.eulerAngles.x + rotation.x > 310)
-        {
-            cameraLookPoint.Rotate(rotation);
-        }
-    }
 }
