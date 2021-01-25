@@ -6,12 +6,16 @@ public class PlayerInput : MonoBehaviour
 {
     [SerializeField] float speed = 5f;
     [SerializeField] float sprintingSpeed = 10f;
-
+    [SerializeField] GameObject ability1;
+    [SerializeField] BoxCollider rangeCollider;
+    [SerializeField] int damage = 50;
     Animator animator;
+    RangeSensor rangeSensor;
 
     void Awake()
     {
         animator = GetComponentInChildren<Animator>();
+        rangeSensor = GetComponentInChildren<RangeSensor>();
     }
 
     void Update()
@@ -33,6 +37,20 @@ public class PlayerInput : MonoBehaviour
         //animate
         animator.SetFloat("Horizontal", horizontal, 0.1f, Time.deltaTime);
         animator.SetFloat("Vertical", vertical, 0.1f, Time.deltaTime);
+
+        //Abilities
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            if (rangeSensor.enemies.Count > 0)
+            {
+                animator.SetTrigger("Cast");
+                Golem target = rangeSensor.enemies[0];
+                if (target.health - damage <= 0)
+                    rangeSensor.enemies.RemoveAt(0);
+                Instantiate(ability1, target.transform.position, Quaternion.identity);
+                target.TakeDamage(damage);
+            }
+        }
     }
 
 }
