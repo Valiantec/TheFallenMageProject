@@ -3,38 +3,63 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Golem : MonoBehaviour
+public class Golem : CombatCharacter
 {
+    [SerializeField] private int attack = 10;
+    [SerializeField] private float speed = 3f;
+    Rigidbody rb;
+    Animator animator;
 
-    [SerializeField] int maxHealth = 100;
-    public int health;
+    Transform player;
 
-    GolemSpawner spawner;
+    [SerializeField] GameObject spawner;
+
+    bool attacking = false;
     
     void Start()
     {
-        health = maxHealth;
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponentInChildren<Animator>();
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        animator.SetInteger("Health", health);
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        
+        var distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        var distanceSpawnerToPlayer = Vector3.Distance(spawner.transform.position, player.position);
+        animator.SetFloat("Vertical", 0f);
+        if (distanceToPlayer > 6.5f && distanceSpawnerToPlayer < 50f)
+        {
+            var pos = Vector3.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+            animator.SetFloat("Vertical", pos.z);
+            rb.MovePosition(pos);
+            transform.LookAt(player);
+        }
+        else if (!attacking && distanceToPlayer <= 6.5f)
+        {
+            animator.SetTrigger("Attack");
+            attacking = true;
+            Invoke(nameof(resetAttacking), 5f);
+
+            player.gameObject.GetComponent<Player>().TakeDamage(attack);
+        }
     }
 
-    public void SetSpawner(GolemSpawner spawner)
+    protected override void Die()
     {
-        this.spawner = spawner;
+        animator.SetTrigger("Die");
+        Invoke(nameof(DestroyGameObject), 1.2f);
     }
 
-    void Die()
+    private void DestroyGameObject()
     {
-        spawner.DecrementGolemCount();
         Destroy(gameObject);
     }
-    public void TakeDamage(int amount)
+
+    private void resetAttacking()
     {
-        health -= amount;
-        if (health <= 0)
-            Die();
+        attacking = false;
     }
+
 }
