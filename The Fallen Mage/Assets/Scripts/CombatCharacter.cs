@@ -8,6 +8,9 @@ public abstract class CombatCharacter : Character
 
     public bool TakeDamage(int amount)
     {
+        if (IsDead)
+            return false;
+
         health -= amount;
         if (health <= 0)
         {
@@ -15,6 +18,8 @@ public abstract class CombatCharacter : Character
         }
         return true;
     }
+
+    public bool IsDead { get => health <= 0; }
 
     protected abstract void Die();
 }

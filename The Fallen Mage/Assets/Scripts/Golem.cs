@@ -46,6 +46,11 @@ public class Golem : CombatCharacter
         }
     }
 
+    public void SetSpawner(GameObject spawner)
+    {
+        this.spawner = spawner;
+    }
+
     protected override void Die()
     {
         animator.SetTrigger("Die");
@@ -55,6 +60,10 @@ public class Golem : CombatCharacter
     private void DestroyGameObject()
     {
         Destroy(gameObject);
+        if (spawner.GetComponent<GolemSpawner>())
+        {
+            spawner.GetComponent<GolemSpawner>().DecrementGolemCount();
+        }
     }
 
     private void resetAttacking()

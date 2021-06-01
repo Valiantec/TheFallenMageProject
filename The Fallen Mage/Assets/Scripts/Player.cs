@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,13 +10,21 @@ public class Player : CombatCharacter
     [SerializeField] private int DEX = 10;
     [SerializeField] private int statPoints = 0;
 
+    public Weapon weapon;
+    public Armor armor;
+
+    [SerializeField] int xpPerKill = 20;
+
     [SerializeField] float speed = 5f;
     [SerializeField] float sprintingSpeed = 10f;
     [SerializeField] GameObject ability1;
     [SerializeField] GameObject ability2;
     [SerializeField] BoxCollider rangeCollider;
+
+    [SerializeField] GameObject playerInfoPanel;
     [SerializeField] GameObject inventory;
     [SerializeField] GameObject characterStatsPanel;
+    [SerializeField] GameObject youDiedPanel;
     
     Animator animator;
     RangeSensor rangeSensor;
@@ -23,6 +32,7 @@ public class Player : CombatCharacter
     int damage;
     public int maxHealth = 1;
 
+    private int xpPoints = 0;
     private int level = 1;
 
     void Start()
@@ -31,6 +41,8 @@ public class Player : CombatCharacter
         rangeSensor = GetComponentInChildren<RangeSensor>();
         calculateHealth();
         calculateDamage();
+        updateStatsPanel();
+        updatePlayerInfo();
     }
 
     void Update()
@@ -47,7 +59,10 @@ public class Player : CombatCharacter
         transform.Translate(movement);
 
         //rotate transform
-        transform.Rotate(transform.up, mouseInput.x);
+        if (!Input.GetKey(KeyCode.LeftAlt))
+        {
+            transform.Rotate(transform.up, mouseInput.x);
+        }
 
         //animate
         animator.SetFloat("Horizontal", horizontal, 0.1f, Time.deltaTime);
@@ -64,6 +79,10 @@ public class Player : CombatCharacter
                     rangeSensor.enemies.RemoveAt(0);
                 Instantiate(ability1, target.transform.position, Quaternion.identity);
                 target.TakeDamage(damage);
+                if (target.IsDead)
+                {
+                    addXP(xpPerKill);
+                }
             }
         }
 
@@ -88,7 +107,25 @@ public class Player : CombatCharacter
 
     }
 
+    private void addXP(int amount)
+    {
+        int milestones = xpPoints / 200;
+        xpPoints += amount;
+        if (xpPoints / 200 > milestones)
+        {
+            levelUp();
+        }
+        updatePlayerInfo();
+    }
+
     protected override void Die()
+    {
+        youDiedPanel.SetActive(true);
+        animator.SetTrigger("Die");
+        Invoke(nameof(resetScene), 3f);
+    }
+
+    private void resetScene()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("Scene1");
     }
@@ -97,6 +134,7 @@ public class Player : CombatCharacter
     {
         level++;
         statPoints += 5;
+        updateStatsPanel();
     }
 
     public void heal(int amount)
@@ -105,14 +143,45 @@ public class Player : CombatCharacter
         health = health > maxHealth ? maxHealth : health;
     }
 
+    public void applyItem(Item item)
+    {
+        if (item is Weapon)
+        {
+
+        }
+        else if (item is Armor)
+        {
+
+        }
+    }
+
+    public void incrementCON()
+    {
+        incrementStats(1, 0, 0);
+    }
+
+    public void incrementINT()
+    {
+        incrementStats(0, 1, 0);
+    }
+
+    public void incrementDEX()
+    {
+        incrementStats(0, 0, 1);
+    }
+
     public void incrementStats(int CON, int INT, int DEX)
     {
         this.CON += CON;
         this.INT += INT;
         this.DEX += DEX;
 
+        this.statPoints -= CON + INT + DEX;
+
         calculateHealth();
         calculateDamage();
+
+        updateStatsPanel();
     }
 
     private void calculateHealth()
@@ -126,4 +195,22 @@ public class Player : CombatCharacter
         damage = INT * 3;
     }
 
+    private void updateStatsPanel()
+    {
+        var panel = characterStatsPanel.GetComponent<CharacterStatsWindow>();
+        panel.setHealth(maxHealth);
+        panel.setDamage(damage);
+        panel.setStatPoints(statPoints);
+        panel.setCON(CON);
+        panel.setINT(INT);
+        panel.setDEX(DEX);
+    }
+
+    private void updatePlayerInfo()
+    {
+        var panel = playerInfoPanel.GetComponent<CharacterInfoPanelLogic>();
+        panel.setName(Name);
+        panel.setLevel(level);
+        panel.setXP(xpPoints);
+    }
 }
