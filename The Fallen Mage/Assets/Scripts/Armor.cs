@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class Armor : Item, Enhanceable
 {
-    [SerializeField] private int defense;
+    [SerializeField] private int health;
+
+    public int getHealth()
+    {
+        return health;
+    }
 
     public void enhance()
     {
-        defense = (int)(defense * 1.2f);
+        health = (int)(health * 1.2f);
     }
 }

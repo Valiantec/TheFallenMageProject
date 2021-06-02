@@ -5,21 +5,19 @@ using UnityEngine;
 public class Inventory : MonoBehaviour
 {
 
-    [SerializeField] Player player;
-
     [SerializeField] GameObject itemGrid;
-    [SerializeField] GameObject weaponSlot;
-    [SerializeField] GameObject armorSlot;
+
+    public GameObject weaponSlot;
+    public GameObject armorSlot;
 
     public void addItem(Item item)
     {
         item.gameObject.transform.SetParent(itemGrid.transform);
+        item.gameObject.transform.localScale = Vector3.one;
     }
 
     public void removeItem(Item item)
     {
         Destroy(item.gameObject);
     }
-
-    //public void 
 }

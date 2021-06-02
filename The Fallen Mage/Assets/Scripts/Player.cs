@@ -13,12 +13,17 @@ public class Player : CombatCharacter
     public Weapon weapon;
     public Armor armor;
 
+    private Ability ability1 = new Ability(2);
+    private Ability ability2 = new Ability(8);
+    private Ability ability3 = new Ability(5);
+    private Ability ability4 = new Ability(10);
+
     [SerializeField] int xpPerKill = 20;
 
     [SerializeField] float speed = 5f;
     [SerializeField] float sprintingSpeed = 10f;
-    [SerializeField] GameObject ability1;
-    [SerializeField] GameObject ability2;
+    [SerializeField] GameObject ability1Effect;
+    [SerializeField] GameObject ability2Effect;
     [SerializeField] BoxCollider rangeCollider;
 
     [SerializeField] GameObject playerInfoPanel;
@@ -40,6 +45,7 @@ public class Player : CombatCharacter
         animator = GetComponentInChildren<Animator>();
         rangeSensor = GetComponentInChildren<RangeSensor>();
         calculateHealth();
+        health = maxHealth;
         calculateDamage();
         updateStatsPanel();
         updatePlayerInfo();
@@ -69,7 +75,7 @@ public class Player : CombatCharacter
         animator.SetFloat("Vertical", vertical, 0.1f, Time.deltaTime);
 
         //Abilities
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && ability1.Cast())
         {
             if (rangeSensor.enemies.Count > 0)
             {
@@ -77,7 +83,7 @@ public class Player : CombatCharacter
                 Golem target = rangeSensor.enemies[0];
                 if (target.health - damage <= 0)
                     rangeSensor.enemies.RemoveAt(0);
-                Instantiate(ability1, target.transform.position, Quaternion.identity);
+                Instantiate(ability1Effect, target.transform.position, Quaternion.identity);
                 target.TakeDamage(damage);
                 if (target.IsDead)
                 {
@@ -86,23 +92,37 @@ public class Player : CombatCharacter
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && ability2.Cast())
         {
             animator.SetTrigger("Cast");
             heal(damage / 2);
-            Instantiate(ability2, transform.position, Quaternion.identity).transform.parent = transform;
+            Instantiate(ability2Effect, transform.position, Quaternion.identity).transform.parent = transform;
         }
 
         // Toggle inventory visibility
         if (Input.GetKeyDown(KeyCode.I))
         {
-            inventory.SetActive(!inventory.activeSelf);
+            if (inventory.GetComponent<RectTransform>().anchoredPosition.x < 1200)
+            {
+                inventory.GetComponent<RectTransform>().anchoredPosition += Vector2.right * 500;
+            }
+            else
+            {
+                inventory.GetComponent<RectTransform>().anchoredPosition -= Vector2.right * 500;
+            }
         }
 
         // Toggle character stats panel visibility
         if (Input.GetKeyDown(KeyCode.C))
         {
-            characterStatsPanel.SetActive(!characterStatsPanel.activeSelf);
+            if (characterStatsPanel.GetComponent<RectTransform>().anchoredPosition.x < 1200)
+            {
+                characterStatsPanel.GetComponent<RectTransform>().anchoredPosition += Vector2.right * 500;
+            }
+            else
+            {
+                characterStatsPanel.GetComponent<RectTransform>().anchoredPosition -= Vector2.right * 500;
+            }
         }
 
     }
@@ -122,7 +142,7 @@ public class Player : CombatCharacter
     {
         youDiedPanel.SetActive(true);
         animator.SetTrigger("Die");
-        Invoke(nameof(resetScene), 3f);
+        Invoke(nameof(resetScene), 5f);
     }
 
     private void resetScene()
@@ -147,17 +167,29 @@ public class Player : CombatCharacter
     {
         if (item is Weapon)
         {
-
+            if (weapon)
+            {
+                inventory.GetComponent<Inventory>().addItem(weapon);
+            }
+            weapon = item as Weapon;
         }
         else if (item is Armor)
         {
-
+            if (armor)
+            {
+                inventory.GetComponent<Inventory>().addItem(armor);
+            }
+            armor = item as Armor;
         }
+        calculateDamage();
+        calculateHealth();
+        updateStatsPanel();
     }
 
     public void incrementCON()
     {
         incrementStats(1, 0, 0);
+        health += 6;
     }
 
     public void incrementINT()
@@ -186,13 +218,12 @@ public class Player : CombatCharacter
 
     private void calculateHealth()
     {
-        health = CON * 6;
-        maxHealth = health;
+        maxHealth = CON * 6 + (armor ? armor.getHealth() : 0);
     }
 
     private void calculateDamage()
     {
-        damage = INT * 3;
+        damage = INT * 3 + (weapon ? weapon.getAttack() : 0);
     }
 
     private void updateStatsPanel()
@@ -213,4 +244,5 @@ public class Player : CombatCharacter
         panel.setLevel(level);
         panel.setXP(xpPoints);
     }
+
 }

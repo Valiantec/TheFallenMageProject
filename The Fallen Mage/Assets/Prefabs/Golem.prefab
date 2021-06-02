@@ -536,6 +536,7 @@ GameObject:
   - component: {fileID: 8270375078586664988}
   - component: {fileID: 8270375078586664979}
   - component: {fileID: 8270375078586664978}
+  - component: {fileID: 6113663067145053582}
   m_Layer: 0
   m_Name: Golem
   m_TagString: Enemy
@@ -570,7 +571,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f94ba7be477c12e46bff947060ddaf9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Name: 
   health: 200
+  attack: 10
   speed: 4
   spawner: {fileID: 0}
 --- !u!136 &8270375078586664979
@@ -603,6 +606,30 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &6113663067145053582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8270375078586664976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d95d90f339533c4785ccb82353a1676, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  droppableItems:
+  - {fileID: 7628619099505938622, guid: d52d167f10da74a4fa2ca0f0375d0dac, type: 3}
+  - {fileID: 7628619099505938622, guid: 306fdef657b21c14a8c526ce80cad539, type: 3}
+  - {fileID: 7628619099505938622, guid: c27ae0d96b50b094b87d51039662b65d, type: 3}
+  - {fileID: 7628619099505938622, guid: 3be8c4c9b2b608948816af86ffccde54, type: 3}
+  - {fileID: 7628619099505938622, guid: 1faa11dceabae714ca25e4910015ade3, type: 3}
+  - {fileID: 7628619099505938622, guid: 632e77958872ecd4e9bd968e343a2626, type: 3}
+  - {fileID: 7628619099505938622, guid: f0ea8c409f49c1d44abf4d36fa4c545a, type: 3}
+  - {fileID: 7628619099505938622, guid: 3603b3f29384c4945bd8d7320fe4e82a, type: 3}
+  - {fileID: 7628619099505938622, guid: 3b787450d0febb14db9d92242c557554, type: 3}
+  itemDrop: {fileID: 8640865667613110292, guid: 4ff9e3e064b6f3e47afd99cbc37ef5a6,
+    type: 3}
 --- !u!1 &8270375078686491464
 GameObject:
   m_ObjectHideFlags: 0

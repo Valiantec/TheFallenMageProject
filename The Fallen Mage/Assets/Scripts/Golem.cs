@@ -29,7 +29,7 @@ public class Golem : CombatCharacter
         var distanceToPlayer = Vector3.Distance(transform.position, player.position);
         var distanceSpawnerToPlayer = Vector3.Distance(spawner.transform.position, player.position);
         animator.SetFloat("Vertical", 0f);
-        if (distanceToPlayer > 6.5f && distanceSpawnerToPlayer < 50f)
+        if (distanceToPlayer > 6.5f && distanceSpawnerToPlayer < 50f - distanceToPlayer * 0.1f)
         {
             var pos = Vector3.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
             animator.SetFloat("Vertical", pos.z);
@@ -60,6 +60,7 @@ public class Golem : CombatCharacter
     private void DestroyGameObject()
     {
         Destroy(gameObject);
+        GetComponent<ItemDropping>().dropItem();
         if (spawner.GetComponent<GolemSpawner>())
         {
             spawner.GetComponent<GolemSpawner>().DecrementGolemCount();

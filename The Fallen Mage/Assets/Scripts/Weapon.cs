@@ -6,6 +6,11 @@ public class Weapon : Item, Enhanceable
 {
     [SerializeField] private int attack;
 
+    public int getAttack()
+    {
+        return attack;
+    }
+
     public void enhance()
     {
         attack = (int)(attack * 1.2f);
